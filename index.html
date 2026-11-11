@@ -30,7 +30,6 @@
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
   .btn{width:100%;margin-top:14px;background:var(--y);color:#000;border:none;border-radius:8px;padding:14px;
        font-family:Anton,sans-serif;font-style:italic;font-size:18px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer}
-  .row .btn{font-size:15px;padding:13px 6px}
   .btn.sec{background:transparent;color:var(--y);border:2px solid var(--y)}
   .warn{font-size:12px;color:var(--y);margin-top:10px;display:none}
   .err{font-size:13px;color:#ff6b6b;margin-top:10px;display:none}
@@ -89,10 +88,7 @@
       </div>
       <div id="zonas"></div>
     </div>
-    <div class="row" style="margin-top:0">
-      <button class="btn sec" id="copyNotas">Copiar p/ Notas</button>
-      <button class="btn" id="copyWpp">Copiar p/ WhatsApp</button>
-    </div>
+    <button class="btn" id="copyWpp" style="margin-top:0">Copiar</button>
     <div class="ok" id="ok"></div>
   </div>
 
@@ -128,7 +124,7 @@ function e1rm(kg, r){
   return (epley+brzycki)/2;
 }
 
-let texto = "", textoWpp = "";
+let textoWpp = "";
 
 $("calc").onclick = () => {
   const err = $("err"); err.style.display="none";
@@ -144,18 +140,14 @@ $("calc").onclick = () => {
   $("rMeta").textContent = `${fmtIn(kg)} kg × ${r} rep${r>1?"s":""} · ${hoje()}`;
   $("rRm").innerHTML = `${fmt(rm)}<i>kg</i>`;
 
-  const linhas = [];
   $("zonas").innerHTML = ZONAS.map(z => {
     const a = fmt(rm*z.min/100), b = fmt(rm*z.max/100);
-    linhas.push(`Z${z.n} ${z.nome} (${z.min}-${z.max}%): ${a} a ${b} kg`);
     return `<div class="z"><div class="zn">${z.n}</div>
       <div class="zi"><b>${z.nome}</b><span>${z.min} a ${z.max}% do 1RM</span></div>
       <div class="zk">${a}-${b}<i>kg</i></div></div>`;
   }).join("");
 
   const reps = `${r} rep${r>1?"s":""}`;
-  texto = `HZ 01 | ZONAS DE CARGA\n${nome} | ${hoje()}\nTeste: ${fmtIn(kg)} kg x ${reps}\n1RM estimado: ${fmt(rm)} kg\n\nZONA | NOME | %1RM | CARGA\n` +
-    ZONAS.map(z => `Z${z.n} | ${z.nome} | ${z.min}-${z.max}% | ${fmt(rm*z.min/100)} a ${fmt(rm*z.max/100)} kg`).join("\n");
   textoWpp = `*HZ 01 | ZONAS DE CARGA*\n*${nome}* | ${hoje()}\nTeste: ${fmtIn(kg)} kg x ${reps}\n1RM estimado: *${fmt(rm)} kg*\n\n` +
     ZONAS.map(z => `*Z${z.n} ${z.nome}* (${z.min}-${z.max}%)\n➡️ ${fmt(rm*z.min/100)} a ${fmt(rm*z.max/100)} kg`).join("\n\n");
   $("ok").textContent = "";
@@ -173,8 +165,7 @@ async function copiar(txt, msg){
   }
   $("ok").textContent = ok ? msg : "Não deu para copiar. Tire um print da tela.";
 }
-$("copyNotas").onclick = () => copiar(texto, "Tabela copiada! Cole no seu bloco de notas.");
-$("copyWpp").onclick = () => copiar(textoWpp, "Copiado! Cole na conversa do WhatsApp.");
+$("copyWpp").onclick = () => copiar(textoWpp, "Copiado! Cole no WhatsApp ou no bloco de notas.");
 </script>
 </body>
 </html>
