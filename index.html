@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HZ 01 | Calculadora de Zonas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0b; --card:#171717; --card2:#202020; --line:#2c2c2c;
+    --y:#FFC400; --txt:#f4f4f4; --mut:#9a9a9a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;min-height:100vh;
+       display:flex;justify-content:center;padding:20px 14px 40px}
+  .wrap{width:100%;max-width:440px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .logo{width:46px;height:46px;border:2px solid var(--y);border-radius:6px;display:flex;align-items:center;
+        justify-content:center;font-family:Anton,sans-serif;color:var(--y);font-size:20px;letter-spacing:.5px;flex:none}
+  .ttl{font-family:Anton,sans-serif;font-style:italic;text-transform:uppercase;font-size:24px;line-height:1;letter-spacing:.5px}
+  .ttl span{color:var(--y)}
+  .sub{color:var(--mut);font-size:12px;margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  label{display:block;font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+  select,input{width:100%;background:var(--card2);color:var(--txt);border:1px solid var(--line);border-radius:8px;
+       padding:12px;font-size:16px;font-family:inherit;outline:none}
+  select:focus,input:focus{border-color:var(--y)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .btn{width:100%;margin-top:14px;background:var(--y);color:#000;border:none;border-radius:8px;padding:14px;
+       font-family:Anton,sans-serif;font-style:italic;font-size:18px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer}
+  .row .btn{font-size:15px;padding:13px 6px}
+  .btn.sec{background:transparent;color:var(--y);border:2px solid var(--y)}
+  .warn{font-size:12px;color:var(--y);margin-top:10px;display:none}
+  .err{font-size:13px;color:#ff6b6b;margin-top:10px;display:none}
+  #res{display:none}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:12px}
+  .ex{font-family:Anton,sans-serif;font-style:italic;text-transform:uppercase;font-size:20px;line-height:1.1}
+  .meta{color:var(--mut);font-size:12px;margin-top:4px}
+  .rm{text-align:right}
+  .rm small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+  .rm b{font-family:Anton,sans-serif;font-size:32px;color:var(--y);font-weight:400}
+  .rm b i{font-style:normal;font-size:16px;margin-left:2px}
+  .z{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .z:last-child{border-bottom:none}
+  .zn{width:34px;height:34px;flex:none;background:var(--y);color:#000;border-radius:6px;display:flex;align-items:center;
+      justify-content:center;font-family:Anton,sans-serif;font-size:16px}
+  .zi{flex:1;min-width:0}
+  .zi b{display:block;font-size:14px;font-weight:600}
+  .zi span{font-size:12px;color:var(--mut)}
+  .zk{font-family:Anton,sans-serif;font-size:19px;white-space:nowrap}
+  .zk i{font-style:normal;font-size:12px;color:var(--mut);margin-left:3px}
+  .ok{font-size:13px;color:var(--y);text-align:center;margin-top:8px;min-height:18px}
+  footer{color:#555;font-size:11px;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">HZ</div>
+    <div>
+      <div class="ttl">Calculadora de <span>Zonas</span></div>
+      <div class="sub">Studio HZ 01 · A Revolução do Treinamento</div>
+    </div>
+  </header>
+
+  <div class="card">
+    <label for="ex">Exercício</label>
+    <input id="ex" type="text" list="lista" autocomplete="off" placeholder="Digite ou escolha o exercício">
+    <datalist id="lista"></datalist>
+    <div class="row">
+      <div><label for="kg">Carga (kg)</label><input id="kg" type="number" inputmode="decimal" min="1" step="0.5" placeholder="Ex: 80"></div>
+      <div><label for="reps">Repetições</label><input id="reps" type="number" inputmode="numeric" min="1" max="12" step="1" placeholder="1 a 12"></div>
+    </div>
+    <div class="warn" id="warn">Acima de 10 repetições a estimativa fica menos precisa. Se puder, teste com menos reps.</div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="calc">Calcular</button>
+  </div>
+
+  <div id="res">
+    <div class="card">
+      <div class="head">
+        <div>
+          <div class="ex" id="rEx"></div>
+          <div class="meta" id="rMeta"></div>
+        </div>
+        <div class="rm"><small>1RM estimado</small><b id="rRm"></b></div>
+      </div>
+      <div id="zonas"></div>
+    </div>
+    <div class="row" style="margin-top:0">
+      <button class="btn sec" id="copyNotas">Copiar p/ Notas</button>
+      <button class="btn" id="copyWpp">Copiar p/ WhatsApp</button>
+    </div>
+    <div class="ok" id="ok"></div>
+  </div>
+
+  <footer>1RM estimado pela média das fórmulas de Epley e Brzycki</footer>
+</div>
+
+<script>
+const EXERCICIOS = [
+  "Agachamento livre","Agachamento frontal","Levantamento terra","Terra romeno",
+  "Supino reto","Supino inclinado","Desenvolvimento","Remada curvada",
+  "Hip thrust","Leg press 45°"
+];
+const ZONAS = [
+  {n:1, nome:"Velocidade", min:20, max:40},
+  {n:2, nome:"Potência", min:40, max:70},
+  {n:3, nome:"Força máxima", min:70, max:95},
+  {n:4, nome:"Hipertrofia tensional", min:60, max:80},
+  {n:5, nome:"Hipertrofia metabólica", min:40, max:60}
+];
+
+const $ = id => document.getElementById(id);
+EXERCICIOS.forEach(e => { const o=document.createElement("option"); o.value=e; $("lista").appendChild(o); });
+$("reps").oninput = () => { const r=+$("reps").value; $("warn").style.display = r>10 && r<=12 ? "block" : "none"; };
+
+const fmt = v => String(Math.round(v));
+const fmtIn = v => v.toLocaleString("pt-BR",{maximumFractionDigits:1});
+const hoje = () => new Date().toLocaleDateString("pt-BR");
+
+function e1rm(kg, r){
+  if (r === 1) return kg;
+  const epley = kg*(1+r/30);
+  const brzycki = kg*36/(37-r);
+  return (epley+brzycki)/2;
+}
+
+let texto = "", textoWpp = "";
+
+$("calc").onclick = () => {
+  const err = $("err"); err.style.display="none";
+  const kg = parseFloat(String($("kg").value).replace(",", "."));
+  const r = parseInt($("reps").value, 10);
+  const nome = $("ex").value.trim();
+  if (!nome) { err.textContent="Escreva o nome do exercício."; err.style.display="block"; return; }
+  if (!(kg>0)) { err.textContent="Informe a carga em kg."; err.style.display="block"; return; }
+  if (!(r>=1 && r<=12)) { err.textContent="Informe de 1 a 12 repetições."; err.style.display="block"; return; }
+
+  const rm = e1rm(kg, r);
+  $("rEx").textContent = nome;
+  $("rMeta").textContent = `${fmtIn(kg)} kg × ${r} rep${r>1?"s":""} · ${hoje()}`;
+  $("rRm").innerHTML = `${fmt(rm)}<i>kg</i>`;
+
+  const linhas = [];
+  $("zonas").innerHTML = ZONAS.map(z => {
+    const a = fmt(rm*z.min/100), b = fmt(rm*z.max/100);
+    linhas.push(`Z${z.n} ${z.nome} (${z.min}-${z.max}%): ${a} a ${b} kg`);
+    return `<div class="z"><div class="zn">${z.n}</div>
+      <div class="zi"><b>${z.nome}</b><span>${z.min} a ${z.max}% do 1RM</span></div>
+      <div class="zk">${a}-${b}<i>kg</i></div></div>`;
+  }).join("");
+
+  const reps = `${r} rep${r>1?"s":""}`;
+  texto = `HZ 01 | ZONAS DE CARGA\n${nome} | ${hoje()}\nTeste: ${fmtIn(kg)} kg x ${reps}\n1RM estimado: ${fmt(rm)} kg\n\nZONA | NOME | %1RM | CARGA\n` +
+    ZONAS.map(z => `Z${z.n} | ${z.nome} | ${z.min}-${z.max}% | ${fmt(rm*z.min/100)} a ${fmt(rm*z.max/100)} kg`).join("\n");
+  textoWpp = `*HZ 01 | ZONAS DE CARGA*\n*${nome}* | ${hoje()}\nTeste: ${fmtIn(kg)} kg x ${reps}\n1RM estimado: *${fmt(rm)} kg*\n\n` +
+    ZONAS.map(z => `*Z${z.n} ${z.nome}* (${z.min}-${z.max}%)\n➡️ ${fmt(rm*z.min/100)} a ${fmt(rm*z.max/100)} kg`).join("\n\n");
+  $("ok").textContent = "";
+  $("res").style.display = "block";
+  $("res").scrollIntoView({behavior:"smooth", block:"start"});
+};
+
+async function copiar(txt, msg){
+  let ok = false;
+  try { await navigator.clipboard.writeText(txt); ok = true; }
+  catch(e){
+    const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t); t.select();
+    try{ ok=document.execCommand("copy"); }catch(_){}
+    t.remove();
+  }
+  $("ok").textContent = ok ? msg : "Não deu para copiar. Tire um print da tela.";
+}
+$("copyNotas").onclick = () => copiar(texto, "Tabela copiada! Cole no seu bloco de notas.");
+$("copyWpp").onclick = () => copiar(textoWpp, "Copiado! Cole na conversa do WhatsApp.");
+</script>
+</body>
+</html>
